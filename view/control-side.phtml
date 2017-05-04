@@ -1,0 +1,32 @@
+<?
+    $form = $table->getFilterForm();
+    // foreach($form->getElements as &$el)$el->setOption('grid',12);
+?>
+<? $footBtns = $table->getFootButtons();if($footBtns)foreach($footBtns as $btn)echo $this->FootButton($btn) .'&nbsp;&nbsp;';?>        
+<h4 class="control-sidebar-heading">Wyszukiwarka</h4>
+<div class="input-group" >
+        <input type="text" name="table_search" ng-model="query.search" class="form-control pull-right" placeholder="<?= $table->getSearchLabel(); ?>">
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-default btn-flat"><i class="fa fa-search"></i></button>
+        </div>
+</div>
+<p>
+<?= $table->getSearchLabel(); ?>
+</p>
+<? if($table->hasFilterForm()):?>
+<h4 class="control-sidebar-heading">Filtry</h4>
+<?= $this->myForm()->nosubmit()->vertical($form,1); ?>
+<div class="btn btn-flat btn-danger btn-labeled btn-sm pull-right" ng-click="setInitialState()">
+    <span class="btn-label"><i class="fa fa-times"></i></span>
+    Wyczyść filtry
+</div>
+<? endif;?>
+<style>
+.dropdown-menu-tree-select{
+    overflow: auto;
+    max-height: 50vh;
+}
+.control-sidebar.control-sidebar-open[style]{
+        overflow: initial !important;;
+}
+</style>

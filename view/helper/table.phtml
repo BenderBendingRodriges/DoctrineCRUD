@@ -1,0 +1,41 @@
+<? $this->headLink()->appendStylesheet($this->basePath('/assets/table.css'));?>
+
+<? if($table->hasSearch())echo $this->partial('helper/search'); ?>
+<div class="box">
+<div class="box-header">
+    <h3 class="box-title">Bordered Table</h3>
+    <div class="box-tools">
+        <? if($table->getFootButtons()):?>
+        <div class="btn-group">
+        <? foreach($table->getFootButtons() as $btn)echo $this->footButton($btn).'&nbsp;'; ?>
+        </div>
+        <? endif;?>
+    </div>
+</div>
+
+<div class='box-body no-padding table-responsive'>
+<table class='table table-striped table-hover table-bordered'>
+    <thead>
+        <tr>
+            <th>#</th>
+            <? foreach($table->getColumns() as $column): ?>
+            <?= $this->HeaderColumn($column); ?>
+            <? endforeach; ?>
+            <th colspan="<?= count($table->getButtons()) ?>" class='text-right'>Opcje</th>
+        </tr>
+    </thead>
+    <? foreach($table->getPaginator() as $k => $item): ?>
+    <tr>
+        <td><?= $k+1 + ($table->getPaginator()->getCurrentPageNumber()-1)*$table->getPaginator()->getDefaultItemCountPerPage(); ?></td>
+        <? foreach($table->getColumns() as $column): ?>
+        <?= $this->BodyColumn($column,$item); ?>
+        <? endforeach; ?>
+        <? foreach($table->getButtons() as $btn)echo $this->bodyButton($btn,$item); ?>
+    </tr>
+    <? endforeach; ?>
+</table>
+</div>
+<div class="box-footer clearfix">
+      <?= $this->paginationControl($table->getPaginator(),'Sliding','partial/table_paginator'); ?>
+</div>
+</div>

@@ -1,0 +1,9 @@
+<?
+	$form = $table->getFilterForm();
+?>
+
+<? foreach ($form->getElements() as $element):?>
+
+<?= $this->formElement($element); ?>
+
+<? endforeach;?>

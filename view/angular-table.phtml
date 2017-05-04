@@ -1,0 +1,187 @@
+
+<? if($table->hasCookieKey())echo '<script>var coookiekey=\''.$table->getCookieKey().'\'</script>';?>
+<? if($table->hasInitalState()): echo '<script>var InitalState='.json_encode($table->getInitalState()).';</script>';?>
+<? else: ?><script>var InitalState=null;</script><? endif; ?>
+
+
+
+<div class="box box-success" >
+<div class="box-header with-border">
+    <h3 class="box-title"><?= $table->getLabel(); ?></h3>
+    <? /*if(false && $table->getFootButtons()):?>
+        <div class="box-tools">
+            <? $footBtns = $table->getFootButtons();if($footBtns)foreach($footBtns as $btn)echo $this->footButton($btn) .'&nbsp;&nbsp;';?>        
+        </div>
+    <? else: ?>
+        <ul class="nav nav-tabs pull-right" style="    margin: -6px -12px -12px 0;">
+        <?
+            $nav = $this->navigation('navigation')->getContainer();
+            $activePage = isset($activePage) && $activePage ? $activePage : $nav->findByActive(true);
+            foreach($activePage->getPages() as $page):
+                if(!@$page->get('table') && !$page->isVisible())continue;
+        ?>
+        
+            <li class="">
+                <a href="<?= $page->getHref();?>">
+                    <i class="fa <?= $page->get('icon'); ?> fa-fw fa-lg"></i> 
+                    <?= $page->getLabel(); ?>
+                </a>
+            </li>
+        
+        <? endforeach; ?>
+        </ul>
+    <? endif;*/ ?>
+
+    <div class="box-tools" role="alert" ng-if="totalUnfilter > 0">
+        <span class="label label-info" style="font-weight: 500;font-size: 0.9em">
+            Znaleziono 
+            <strong>{{total}}</strong>
+            <ng-pluralize count="total" offset=2
+                      when="{'0': 'elementów',
+                             'one': 'element',
+                             'few': 'elementy',
+                             'many': 'elementów',                     
+                             'other': 'elementów'}">
+            </ng-pluralize>
+            spełniających podane kryteria z
+            <strong>{{totalUnfilter}} </strong>
+            znajdujących się w bazie
+        </span>
+    </div>
+</div>
+
+
+<div class='box-body no-padding table-responsive' style="position: relative;">
+
+<div class="overlay ng-hide-animate" ng-hide="!loading" >
+    <div class="overlay-spinner">
+        <p><i class="fa fa-5x fa-spinner fa-spin"></i></p>
+        <p>trwa ładowanie</p>
+    </div>
+</div>
+<table class='table table-striped table-hover table-bordered'  >
+    <thead>
+        <tr>
+            <th style="width:25px">#</th>
+            <? 
+            $columns = null;
+            foreach($table->getColumns() as $column)$columns .= $this->HeaderColumn()->angular($column); 
+            echo $columns;
+            ?>
+            <th colspan="<?= count($table->getButtons()) ?>" class='text-right'>Opcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-hide="items.length > 0">
+            <td colspan="<?= count($table->getButtons()) + count($table->getColumns()) +1 ?>" class="text-center">
+            <p>- brak wyników -</p>
+            </td>
+        </tr>
+        <tr ng-repeat="(key,item) in items" dt-repeat>
+            <td>{{(key*1+(query.page-1)*query.itemCount+1)|number}}</td>
+            <? foreach($table->getColumns() as $column): ?>
+            <?= $this->BodyColumn()->angular($column); ?>
+            <? endforeach; ?>
+            <? if($table->getButtons())foreach($table->getButtons() as $btn)echo $this->BodyButton()->angular($btn); ?>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>#</th>
+            <? echo $columns; ?>
+            <th colspan="<?= count($table->getButtons()) ?>" class='text-right'>Opcje</th>
+        </tr>
+    </tfoot>
+</table>
+</div>
+<div class="box-footer clearfix">
+    <ul class="pagination pagination-sm no-margin pull-right">
+        <li><a href="#" ng-click="paginator.first()"><i class="fa fa-angle-double-left"></i></a></li>
+        <li><a href="#" ng-click="paginator.prev()"><i class="fa fa-angle-left"></i></a></li>
+        <li ng-if="paginator.hasMoreBefore()"><a>...</a></li>
+
+        <li ng-repeat="p in paginator.range()" ng-class='{active: p == query.page}'><a href="#" ng-click="paginator.setPage(p)">{{p}}</a></li>
+
+        <li ng-if="paginator.hasMoreAfter()"><a>...</a></li>
+        <li><a href="#" ng-click="paginator.next()"><i class="fa fa-angle-right"></i></a></li>
+        <li><a href="#" ng-click="paginator.last()"><i class="fa fa-angle-double-right"></i></a></li>
+    </ul>
+      <?//= $this->paginationControl($table->getPaginator(),'Sliding','partial/table_paginator'); ?>
+</div>
+</div>
+
+<script type="text/javascript">
+ $(function () {
+    $('.collapsed-box .box-body').hide();
+    $('table .icheck').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square-blue',
+      increaseArea: '20%' // optional
+    });
+  });   
+</script>
+
+<style>
+td > div{
+    font-size: 90%;
+}
+#filterForm.collapse{
+    display: block;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+#filterForm.collapse.in{
+    height: auto;
+    visibility: visible;
+        overflow: visible;
+}
+.order-th{
+    padding-right: 20px !important;
+}
+.overlay{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 1; 
+    
+}
+.overlay .overlay-spinner{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    transition: opacity 1s ease-out,height 1s ease-out;
+    
+}
+/*@-webkit-keyframes fadeOut {
+    0% { opacity: 1;height: 100%; }
+    99% { opacity: 0;height: 100%; }
+    100% { opacity: 0;height: 0%;  }
+}*/
+@keyframes fadeIn {
+    from { opacity: 0;height: 100%; }
+    to { opacity: 1;height: 100%; }
+}
+@keyframes fadeOut {
+    from { opacity: 1;height: 100%; }
+    to { opacity: 0;height: 100%; }
+}
+.overlay.ng-hide{
+    /*-webkit-animation: fadeOut 0.4s;*/
+    animation: fadeOut 0.4s;
+    height:0;
+    overflow: hidden;
+}
+.overlay:not(.ng-hide){
+    /*animation: fadeIn 0.2s;*/
+}
+
+.angular-table-select option {
+    display: none;
+}
+.angular-table-select option[ng-value] {
+    display: block;
+}
+</style>

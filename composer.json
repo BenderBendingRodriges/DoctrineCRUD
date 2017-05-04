@@ -1,0 +1,17 @@
+{
+    "name": "bender/doctrine-crud",
+    "description": "ZF3 Module for crud table view with Doctrine ORM",
+    "type": "library",
+    "require": {
+        "php": "^7.0",
+        "zendframework/zendframework": "3.0.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kiriłł Timoszenko",
+            "email": "mail@web-solution.pl"
+        }
+    ],
+    "minimum-stability": "dev"
+}

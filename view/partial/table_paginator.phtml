@@ -1,0 +1,80 @@
+<?php $params = array();//$this->routeParams; //var_Dump($params);die();?>
+<? $this->route = 'def/list'; ?>
+<?php if ($this->pageCount): ?>
+    <ul class="pagination pagination-sm no-margin pull-right">
+            <?php if (isset($this->first) && $this->current != $this->first): ?>
+                <li>
+                    <?php $params['page'] = $this->first; ?>
+                    <a href="<?php echo $this->url($this->route,$params,true); ?><?= $this->getQuery; ?>">
+                       <span class="glyphicon glyphicon-fast-backward"></span>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="disabled">
+                    <a href="#">
+                       <span class="glyphicon glyphicon-fast-backward"></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+            <!-- Previous page link -->
+            <?php if (isset($this->previous)): ?>
+                <li>
+                    <?php $params['page'] = $this->previous; ?>
+                    <a href="<?php echo $this->url($this->route,$params,true); ?><?= $this->getQuery; ?>">
+                        <span class="glyphicon glyphicon-backward"></span>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="disabled">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-backward"></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+            <!-- Numbered page links -->
+            <?php foreach ($this->pagesInRange as $page): ?>
+                <?php if ($page != $this->current): ?>
+                    <li>
+                        <?php $params['page'] = $page; ?>
+                        <a href="<?php echo $this->url($this->route,$params,true); ?><?= $this->getQuery; ?>">
+                            <?php echo $page; ?>
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="active">
+                        <a href="#"><?php echo $page; ?></a>
+                    </li>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+            <!-- Next page link -->
+            <?php if (isset($this->next)): ?>
+                <li>
+                    <?php $params['page'] = $this->next; ?>
+                    <a href="<?php echo $this->url($this->route,$params,true); ?><?= $this->getQuery; ?>">
+                       <span class="glyphicon glyphicon-forward"></span>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="disabled">
+                    <a href="#">
+                       <span class="glyphicon glyphicon-forward"></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+            <?php if (isset($this->last) && $this->current != $this->last): ?>
+                <li>
+                    <?php $params['page'] = $this->last; ?>
+                    <a href="<?php echo $this->url($this->route,$params,true); ?><?= $this->getQuery; ?>">
+                       <span class="glyphicon glyphicon-fast-forward"></span>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="disabled">
+                    <a href="#">
+                       <span class="glyphicon glyphicon-fast-forward"></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+        </ul>
+<?php endif; ?>

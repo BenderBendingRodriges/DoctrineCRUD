@@ -1,0 +1,33 @@
+<form class="form" method="post">
+<div data-searach-panel="fade" style="overflow: hidden">
+<div class="input-group" >
+    <span class="input-group-addon" >
+        <i class="fa fa-search fa-lg fa-fw"></i>
+        <span>Wyszukiwarka</span>
+    </span>
+    <input class="form-control" name="search" placeholder="<?= $table->getSearchLabel(); ?>" value="<?= $table->getParams('search'); ?>">
+    <span class="input-group-btn">
+        <button type="submit" class="btn btn-primary btn-labeled">
+            <span class="btn-label"><i class="fa fa-search fa-lg fa-fw"></i></span>            
+            Szukaj
+        </button>        
+<!--        <span class="btn btn-info btn-labeled" data-searach-advance>
+            <span class="btn-label"><i class="fa fa-cogs fa-lg fa-fw"></i></span>            
+            Zaawansowane
+        </span>-->
+        <? if($table->getParams('search')): ?>
+        <a href="<?= $this->url(null,array_filter(array_merge($table->getParams(),array('search'=>null)))); ?>" class="btn btn-danger btn-labeled">
+            <span class="btn-label"><i class="fa fa-times fa-lg fa-fw"></i></span>            
+            Wyszyść
+        </a>
+        <? else: ?>
+        <span class="btn btn-danger btn-labeled disabled">
+            <span class="btn-label"><i class="fa fa-times fa-lg fa-fw"></i></span>            
+            Wyszyść
+        </span>
+        <? endif; ?>
+    </span>
+</div>
+</div>
+</form>
+<p>&nbsp;</p>
