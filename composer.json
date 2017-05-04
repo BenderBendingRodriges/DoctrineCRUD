@@ -6,6 +6,7 @@
         "php": "^7.0",
         "zendframework/zendframework": "3.0.0"
     },
+    "homepage": "https://github.com/BenderBendingRodriges/DoctrineCRUD",
     "license": "MIT",
     "authors": [
         {
