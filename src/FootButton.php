@@ -7,7 +7,8 @@ class FootButton {
     private $url;
     private $btn;
     private $title;
-    private $class = array('btn btn-labeled','btn-block','btn-flat');
+    private $dropdown;
+    private $class = array('btn', 'btn-labeled','btn-block','btn-flat');
     private $icon = array('fa fa-fw fa-lg');
     
     public function setBtn($val){

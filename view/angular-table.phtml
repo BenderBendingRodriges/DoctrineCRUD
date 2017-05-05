@@ -32,22 +32,6 @@
         </ul>
     <? */endif; ?>
 
-    <div class="box-tools" role="alert" ng-if="totalUnfilter > 0">
-        <span class="label label-info" style="font-weight: 500;font-size: 0.9em">
-            Znaleziono 
-            <strong>{{total}}</strong>
-            <ng-pluralize count="total" offset=2
-                      when="{'0': 'elementów',
-                             'one': 'element',
-                             'few': 'elementy',
-                             'many': 'elementów',                     
-                             'other': 'elementów'}">
-            </ng-pluralize>
-            spełniających podane kryteria z
-            <strong>{{totalUnfilter}} </strong>
-            znajdujących się w bazie
-        </span>
-    </div>
 </div>
 
 
@@ -95,6 +79,20 @@
 </table>
 </div>
 <div class="box-footer clearfix">
+<span class="" style="font-weight: 500;font-size: 1em">
+            Znaleziono 
+            <strong>{{total}}</strong>
+            <ng-pluralize count="total" offset=2
+                      when="{'0': 'elementów',
+                             'one': 'element',
+                             'few': 'elementy',
+                             'many': 'elementów',                     
+                             'other': 'elementów'}">
+            </ng-pluralize>
+            spełniających podane kryteria z
+            <strong>{{totalUnfilter}} </strong>
+            znajdujących się w bazie
+        </span>
     <ul class="pagination pagination-sm no-margin pull-right">
         <li><a href="#" ng-click="paginator.first()"><i class="fa fa-angle-double-left"></i></a></li>
         <li><a href="#" ng-click="paginator.prev()"><i class="fa fa-angle-left"></i></a></li>
