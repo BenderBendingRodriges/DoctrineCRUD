@@ -1,13 +1,13 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 
 use Zend\View\Model\ViewModel as ViewModel;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use Zend\Paginator\Paginator;
 
-class Table {
+class DoctrineCRUD {
     
     protected $sm;
     protected $qb;

@@ -1,13 +1,13 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 
 use Zend\View\Model\ViewModel as ViewModel;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use Zend\Paginator\Paginator;
 use Zend\View\Model\JsonModel;
-class AngularTable extends Table{
+class AngularDoctrineCRUD extends DoctrineCRUD{
     protected $filterForm;
     protected $cookieKey;
     protected $initalState;
