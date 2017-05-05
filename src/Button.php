@@ -1,6 +1,6 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 class Button {
     /** @var \Table\Table   */
     private $table;

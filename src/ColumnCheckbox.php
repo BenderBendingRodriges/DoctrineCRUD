@@ -1,6 +1,6 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 class ColumnCheckbox extends ColumnInput{
 	public function render(){
 		return sprintf('<td class="text-center no-padding" style="    width: 40px;" >

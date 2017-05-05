@@ -1,6 +1,6 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 class ColumnRadio extends ColumnInput{
 	public function render(){
 		return sprintf('<td>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 class ColumnSelect extends ColumnInput{
 	public function render(){
 		$column = $this;

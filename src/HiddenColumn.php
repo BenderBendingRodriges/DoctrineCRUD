@@ -1,6 +1,6 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 class HiddenColumn extends Column {
     public function addSelect(&$select){
         return $this;

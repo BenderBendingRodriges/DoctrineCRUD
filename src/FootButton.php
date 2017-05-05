@@ -1,6 +1,6 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 class FootButton {
     /** @var \Table\Table   */
     private $table;

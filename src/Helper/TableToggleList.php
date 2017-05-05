@@ -10,7 +10,7 @@
  *
  * @author Kirill
  */
-namespace Table\Helper;
+namespace DoctrineCRUD\Helper;
 
 
 use \Zend\View\Helper\AbstractHelper;

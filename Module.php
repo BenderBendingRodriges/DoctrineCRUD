@@ -26,7 +26,7 @@ class Module
                             'route'    => '/table_delete/:entity/:identity',
                             'defaults' => array(
                                 'module' => 'table',
-                                'controller' => Controller\Index::class,
+                                'controller' => Controller\IndexController::class,
                                 'action'     => 'delete',
                             ),
                         ),
@@ -37,7 +37,7 @@ class Module
                             'route'    => '/table_update/:entity/:identity',
                             'defaults' => array(
                                 'module' => 'table',
-                                'controller' => Controller\Index::class,
+                                'controller' => Controller\IndexController::class,
                                 'action'     => 'update',
                             ),
                         ),
@@ -61,7 +61,7 @@ class Module
                     'BodyColumn' => function($sm){return new \DoctrineCRUD\Helper\BodyColumn($sm);},
                     'HeaderColumn' => function($sm){return new \DoctrineCRUD\Helper\HeaderColumn($sm);},
                     'BodyButton' => function($sm){return new \DoctrineCRUD\Helper\BodyButton($sm);},
-                    'FootButton' => function($sm){return new \DoctrineCRUD\Helper\FootButton($sm);},
+                    'footButton' => function($sm){return new \DoctrineCRUD\Helper\FootButton($sm);},
                     'TableToggleList' => function($sm){return new \DoctrineCRUD\Helper\TableToggleList($sm);}                    
                 ),
             )

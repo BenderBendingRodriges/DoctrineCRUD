@@ -1,6 +1,6 @@
 <?php
 
-namespace Table\Controller;
+namespace DoctrineCRUD\Controller;
 
 use Zend\View\Model\ViewModel as ViewModel;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
@@ -8,29 +8,43 @@ use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use Zend\Paginator\Paginator;
 
 class IndexController extends \Zend\Mvc\Controller\AbstractActionController{
-    
+    /**
+     * Entity manager.
+     * @var Doctrine\ORM\EntityManager 
+     */
+    private $em;
+
+    /**
+     * ServiceLocator.
+     * @var \Zend\ServiceManager\ServiceManager
+     */
+    private $serviceManager;
+
+    public function __construct(\Doctrine\ORM\EntityManager $em){
+        $this->em = $em;
+    }
+
     public function deleteAction(){
-        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $entity = $this->params('entity');
         $entity = str_replace("_","\\",$entity);
 
 
-        $obj = $em->find($entity,$this->params('identity'));
+        $obj = $this->em->find($entity,$this->params('identity'));
         if($obj){
-            $em->remove($obj);
-            $em->flush();
+            $this->em->remove($obj);
+            $this->em->flush();
         }
         
         return $this->redirect()->toUrl($_SERVER['HTTP_REFERER']);
     }
 
     public function updateAction(){
-       	$em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+       	// $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $entity = $this->params('entity');
         $entity = str_replace("_","\\",$entity);
         // die(var_dump($this->params('identity')));
-        $meta = $em->getClassMetadata($entity);
-        $entity =  $em->find($entity,$this->params('identity'));
+        $meta = $this->em->getClassMetadata($entity);
+        $entity =  $this->em->find($entity,$this->params('identity'));
         $data = json_decode(file_get_contents("php://input"));
 
 

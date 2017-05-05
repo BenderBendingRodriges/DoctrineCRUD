@@ -8,11 +8,11 @@
 <div class="box box-success" >
 <div class="box-header with-border">
     <h3 class="box-title"><?= $table->getLabel(); ?></h3>
-    <? /*if(false && $table->getFootButtons()):?>
+    <? if($table->getFootButtons()):?>
         <div class="box-tools">
             <? $footBtns = $table->getFootButtons();if($footBtns)foreach($footBtns as $btn)echo $this->footButton($btn) .'&nbsp;&nbsp;';?>        
         </div>
-    <? else: ?>
+    <?/* else: ?>
         <ul class="nav nav-tabs pull-right" style="    margin: -6px -12px -12px 0;">
         <?
             $nav = $this->navigation('navigation')->getContainer();
@@ -30,7 +30,7 @@
         
         <? endforeach; ?>
         </ul>
-    <? endif;*/ ?>
+    <? */endif; ?>
 
     <div class="box-tools" role="alert" ng-if="totalUnfilter > 0">
         <span class="label label-info" style="font-weight: 500;font-size: 0.9em">
@@ -111,6 +111,7 @@
 </div>
 
 <script type="text/javascript">
+<? $this->inlineScript()->captureStart();?>
  $(function () {
     $('.collapsed-box .box-body').hide();
     $('table .icheck').iCheck({
@@ -119,6 +120,7 @@
       increaseArea: '20%' // optional
     });
   });   
+<? $this->inlineScript()->captureEnd();?>
 </script>
 
 <style>

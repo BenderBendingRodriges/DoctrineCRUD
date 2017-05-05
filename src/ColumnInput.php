@@ -1,6 +1,6 @@
 <?php
 
-namespace Table;
+namespace DoctrineCRUD;
 class ColumnInput extends Column{
 	public function render(){
 		// <i class="fa fa-check fa-fw fa-lg pull-right"></i>
