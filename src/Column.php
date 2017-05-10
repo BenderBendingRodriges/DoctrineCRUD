@@ -14,6 +14,7 @@ class Column {
     private $function;
     private $null;
     private $yesno;
+    private $url;
     private $ng;
     private $viewHelper = null;
     private $sfunction = null;
@@ -123,7 +124,29 @@ class Column {
         if(isset($this->affix)){
             $value = $value. $this->affix;
         }
+        if($this->url){
+            $value =  sprintf('<a href="%s">%s</a>',$this->getUrl($item),$value);
+        }
         return $value;
+    }
+    protected $urlReplace;
+    public function setUrl($val){
+        preg_match_all('/__(.*?)__/s', $val, $matches);
+        $this->urlReplace = array();
+        foreach($matches[0] as $k =>$match){
+            $sort = $matches[1][$k];
+            $expolde = explode(".",$sort);
+            $this->urlReplace[$match] =  array($sort,implode("_",explode(".",$sort)));
+        }
+        $this->url = $val;
+    }
+    public function getUrl($data){
+        $url = $this->url;
+        foreach($this->urlReplace as $replace => $with){
+            $url = str_replace($replace, $data[$with[1]], $url);
+        };
+        
+        return $url;
     }
 }
 

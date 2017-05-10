@@ -27,10 +27,11 @@ class BodyButton extends AbstractHelper{
     }
     
     public function angular($btn) {
-        $html = '<td style="width:1px;padding: 8px 4px;text-align:right">
+        // $html = '<td style="width:1px;padding: 8px 4px;text-align:right">
+        $html = '
         <a %s ng-if="%s" ng-href="%s" class="%s" title="%s" data-toggle="tooltip" data-container="body"><i class="%s">%s</i>%s</a>
-        <span ng-if="!(%s)"  class="btn btn-circle disabled btn-default" title="%s" data-toggle="tooltip" data-container="body" ><i class="%s">%s</i>%s</span>
-        </td>';
+        <span ng-if="!(%s)"  class="btn btn-circle disabled btn-default" title="%s" data-toggle="tooltip" data-container="body" ><i class="%s">%s</i>%s</span>';
+        // </td>';
         
         
         

@@ -1,4 +1,4 @@
-
+<? $this->inlineScript()->appendScript("angular.module( 'myApp').requires.push('doctrine-table');");?>
 <? if($table->hasCookieKey())echo '<script>var coookiekey=\''.$table->getCookieKey().'\'</script>';?>
 <? if($table->hasInitalState()): echo '<script>var InitalState='.json_encode($table->getInitalState()).';</script>';?>
 <? else: ?><script>var InitalState=null;</script><? endif; ?>
@@ -7,35 +7,24 @@
 
 <div class="box box-success" >
 <div class="box-header with-border">
-    <h3 class="box-title"><?= $table->getLabel(); ?></h3>
-    <? if($table->getFootButtons()):?>
-        <div class="box-tools">
-            <? $footBtns = $table->getFootButtons();if($footBtns)foreach($footBtns as $btn)echo $this->footButton($btn) .'&nbsp;&nbsp;';?>        
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="box-title"><?= $table->getLabel(); ?></h3>
         </div>
-    <?/* else: ?>
-        <ul class="nav nav-tabs pull-right" style="    margin: -6px -12px -12px 0;">
-        <?
-            $nav = $this->navigation('navigation')->getContainer();
-            $activePage = isset($activePage) && $activePage ? $activePage : $nav->findByActive(true);
-            foreach($activePage->getPages() as $page):
-                if(!@$page->get('table') && !$page->isVisible())continue;
-        ?>
-        
-            <li class="">
-                <a href="<?= $page->getHref();?>">
-                    <i class="fa <?= $page->get('icon'); ?> fa-fw fa-lg"></i> 
-                    <?= $page->getLabel(); ?>
-                </a>
-            </li>
-        
-        <? endforeach; ?>
-        </ul>
-    <? */endif; ?>
+        <div class="col-md-6 text-right">
+        <? if($table->getFootButtons()):?>
+            <div class="box-tools">
+                <? $footBtns = $table->getFootButtons();if($footBtns)foreach($footBtns as $btn)echo $this->footButton($btn) .'&nbsp;&nbsp;';?>        
+            </div>
+        <? endif; ?>
+        </div>
+    </div>
+
 
 </div>
 
 
-<div class='box-body no-padding table-responsive' style="position: relative;">
+<div class='box-body no-padding' style="position: relative;" id="no-more-tables">
 
 <div class="overlay ng-hide-animate" ng-hide="!loading" >
     <div class="overlay-spinner">
@@ -66,7 +55,9 @@
             <? foreach($table->getColumns() as $column): ?>
             <?= $this->BodyColumn()->angular($column); ?>
             <? endforeach; ?>
+            <td class="buttons">
             <? if($table->getButtons())foreach($table->getButtons() as $btn)echo $this->BodyButton()->angular($btn); ?>
+            </td>
         </tr>
     </tbody>
     <tfoot>

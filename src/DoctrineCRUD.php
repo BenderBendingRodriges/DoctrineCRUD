@@ -12,6 +12,7 @@ class DoctrineCRUD {
     protected $sm;
     protected $qb;
     protected $columns;
+    protected $hiddenColumns;
     protected $searchColumns = [];
     protected $selects;
     public $paginator;
@@ -42,7 +43,7 @@ class DoctrineCRUD {
     }
     public function addHiddenColumn($column){        
         $col = new HiddenColumn($column,$this);
-        // $this->columns[] = $col;
+        $this->hiddenColumns[] = $col;
         if($col->search)$this->searchColumns[] = $col;
             
     }
@@ -124,12 +125,14 @@ class DoctrineCRUD {
             }
             
         }
-        // var_Dump($this->selects);
-        // die();
         unset($params['__NAMESPACE__']);
         unset($params['module']);
         $this->params = $params;        
         foreach ($this->columns as $column){
+            $column->addSelect($this->selects);
+        }
+        foreach ($this->hiddenColumns as $column){
+
             $column->addSelect($this->selects);
         }
         if(count($this->partials)){
