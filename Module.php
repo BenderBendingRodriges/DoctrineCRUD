@@ -18,6 +18,22 @@ class Module
 {
     public function getConfig(){
         return array(
+            'navigation'=>[
+                'default'=>[
+                    'table_delete' => [
+                        'label' => 'Delete',
+                        'route' => 'table_delete',
+                        'resource' => 'loged',
+                        'visible' => false,
+                    ],
+                    'table_update' => [
+                        'label' => 'Delete',
+                        'route' => 'table_update',
+                        'resource' => 'loged',
+                        'visible' => false,
+                    ]
+                ]
+            ],
             'router' => array(                
                 'routes' => array(
                     'table_delete' => array(

@@ -13,7 +13,7 @@ class DoctrineCRUD {
     protected $qb;
     protected $columns;
     protected $hiddenColumns;
-    protected $searchColumns = [];
+    public $searchColumns = [];
     protected $selects;
     public $paginator;
     protected $fromAlias;
@@ -22,6 +22,10 @@ class DoctrineCRUD {
     protected $params;
     public $label;
     public $icon;
+    protected $secondarySort;
+    public function setSecondarySort($val){
+        $this->secondarySort = $val;
+    }
     
     
     public $partials = array();
@@ -29,6 +33,9 @@ class DoctrineCRUD {
     public function __construct($qb = null ,$sm = null) {
         if($qb)$this->setQb($qb);
         $this->sm = $sm;
+    }
+    public function getQb(){
+        return $this->qb;
     }
     public function getServiceManager(){return $this->sm;}
     public function setColumns($columns){
@@ -62,10 +69,58 @@ class DoctrineCRUD {
         $this->buttons = array();
         foreach($buttons as $btn)$this->addButton($btn);
     }
+
+    protected static function findActivePage($container,$rm){
+        foreach ($container->getPages() as $key => $page) {
+            $page = clone $page;
+            $page->setRouteMatch($rm);
+            $page->setActive(false);
+
+
+            if($page->isActive())
+            {
+                
+                return $page;
+            }
+            else if($page->hasPages())
+            {
+                $found = self::findActivePage($page,$rm);
+                if($found)
+                    return $found;   
+            }
+            
+        }
+        return null;
+    }
+
+    protected function checkIsAllowedFromUrl($url){
+        $nav = clone $this->sm->get('Zend\Navigation\Navigation');
+        $rm = $this->sm->get('Router');
+        $req = new \Zend\Http\PhpEnvironment\Request();
+        $req->setRequestUri($url);
+        $req->setUri($url);
+        
+        $page = self::findActivePage($nav,$rm->match($req));    
+        if(!$page)return false;
+
+        $acl = $this->sm->get('ViewManager')->getViewModel()->getVariable('acl');
+
+        return $acl->isAllowed(null,$page->getResource(),$page->getPrivilege());
+    }
     public function addButton($button){
-        $this->buttons[] = new Button($button,$this);
+        
+
+        
+        
+        if($this->checkIsAllowedFromUrl($button['url']))
+            $this->buttons[] = new Button($button,$this);
     }
     public function addDelButton($entity = null,$identity = null){
+        $user = $this->sm->get('Zend\Authentication\AuthenticationService')->getIdentity();
+        if($user->role != 'admin')return;
+        // var_dump(get_class($user));
+
+        // die();
         if(!$entity || !$identity){
             $from = $this->qb->getDQLPart('from');   
             $from = $from[0];         
@@ -85,7 +140,19 @@ class DoctrineCRUD {
         foreach($buttons as $btn)$this->addFootButton($btn);
     }
     public function addFootButton($button){
-        $this->footButtons[] = new FootButton($button,$this);
+        if(@$button['dropdown'])
+        {
+            foreach($button['dropdown'] as $key => $dropbtn){
+                if(!$this->checkIsAllowedFromUrl($dropbtn['url'])){
+                    unset($button['dropdown'][$key]);
+                }
+            }
+            if(count($button['dropdown']))
+            $this->footButtons[] = new FootButton($button,$this);
+        }
+        else if($this->checkIsAllowedFromUrl($button['url'])){
+            $this->footButtons[] = new FootButton($button,$this);
+        }
     }
     public function getParams($name = null){
         return $name ? ( is_array($this->params) && isset($this->params[$name]) ? $this->params[$name] : null ) : $this->params;
@@ -138,15 +205,16 @@ class DoctrineCRUD {
         if(count($this->partials)){
             if(!isset($this->partials[$this->fromAlias])){
                 $this->selects[] = 'partial '.$this->fromAlias.'.{id}';
+                // $this->selects[] = $this->fromAlias;
             }
             foreach($this->partials as $k => $p){
                 if(!in_array('id',$p))$p[] = 'id';
                     
-                $this->selects[] = sprintf('partial %s.{%s}',$k,implode(',',$p));
+                $this->selects[] = $k;//sprintf('partial %s.{%s}',$k,implode(',',$p));
             }
             
         }
-//        die(var_dump($this->partials));
+       // die(var_dump($this->selects));
         if($this->buttons){
             foreach ($this->buttons as $btn){
                 foreach ($btn->selects as $select){
@@ -166,6 +234,11 @@ class DoctrineCRUD {
 
         // var_Dump($sort);
         if($sort)$this->qb->addOrderBy($sort, $order);
+        if($this->secondarySort){
+            $this->qb->addOrderBy($this->secondarySort[0], $this->secondarySort[1]);
+            // die($this->qb->getQuery()->getDQL());
+        }
+
         
         if(isset($this->params['search']) && ($fraze = $this->params['search'])){
             $formatArray = array();
@@ -210,19 +283,47 @@ class DoctrineCRUD {
                     
                 }
             }
-            // var_dump($this->params['filter']);
-            // die();
+            // var_dump($criteria);
+            
             foreach($criteria as $prop => $crit){
-                // var_dump(key($crit));
+                $crit = array_filter($crit);
+                // var_dump($crit[key($crit)]);
+                // var_dump($key = key($crit));
+                // die();
                 switch($key = key($crit)){
                     case 'eq':
+
+
                         if($crit[$key])
                         $this->qb->andWhere($prop.' = '.$crit[$key]);
+                        break;
+                     case 'like':                        
+                        if($crit[$key]){
+                            $propN = str_replace(".","_",$prop);
+                            $this->qb->andWhere($prop." LIKE :filter$propN")->setParameter('filter'.$propN,$crit[$key]);
+                        }
+                        
                         break;
                     case 'address':
                         if($crit[$key])
                         $this->qb->andWhere($prop." LIKE '%;".$crit[$key].";%'");
                         // die($prop." LIKE '%;".$crit[$key].";%'");
+                        break;
+                     case 'discr':
+                        $prop = str_replace(".discr","",$prop);
+                        $part = new \Doctrine\ORM\Query\Expr\Orx();
+                        foreach($crit[$key] as $class_name => $is){
+
+                            if(!$is)continue;
+                            $class_name = str_replace("__","\\",$class_name);
+                            // var_dump($class_name);
+                            $part->add($prop.' INSTANCE OF '.$class_name);
+                            
+                        }
+                        if($part->count())
+                            $this->qb->andWhere($part);
+                        // var_dump($prop);
+                        // die($this->qb->getDQL());
                         break;
                     case 'in':
 
@@ -274,9 +375,17 @@ class DoctrineCRUD {
                         break;
                     case 'rangeTime':
                         $range = json_decode($crit[$key]);
+                        if(!$range){
+                            $r = explode(" - ",$crit[$key]);
+                            $range = (object)[
+                                'from' => $r[0] . " 00:00:00",
+                                'to' => $r[1] . " 23:59:59",
+                            ];
+                        }
+                        // die(var_dump($range));
                         // $this->qb->andWhere($prop.' BETWEEN '.$range->from . ' AND ' . $range->to);
-                        $this->qb->andWhere($prop." >= '".date('Y-m-d H:i:s',$range->from)."'");
-                        $this->qb->andWhere($prop." <= '".date('Y-m-d H:i:s',$range->to)."'");
+                        $this->qb->andWhere($prop." >= '".$range->from."'");
+                        $this->qb->andWhere($prop." <= '".$range->to."'");
                         break;
                         
                 }
@@ -284,7 +393,11 @@ class DoctrineCRUD {
         }
         // die();
         // die($this->qb->getQuery()->getSQL());
+        
         $ormP = new ORMPaginator($this->qb);
+
+       
+        // die(var_dump($this->qb->getDQLParts('where')));
         $ormP->setUseOutputWalkers(false);
         $adapter = new DoctrineAdapter($ormP);
         $this->paginator = new Paginator($adapter);
@@ -295,6 +408,10 @@ class DoctrineCRUD {
         $page = (int)$params['page'];
         if($page) $this->paginator->setCurrentPageNumber($page);
         return $this;
+    }
+
+    public function setServiceMamanger($sm){
+            $this->sm = $sm;
     }
 
     public function getResponse($sm,$template = 'table'){

@@ -7,7 +7,7 @@ use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use Zend\Paginator\Paginator;
 
-class IndexController extends \Zend\Mvc\Controller\AbstractActionController{
+class IndexController extends \Zend\Mvc\Controller\AbstractRestfulController{
     /**
      * Entity manager.
      * @var Doctrine\ORM\EntityManager 
@@ -24,6 +24,8 @@ class IndexController extends \Zend\Mvc\Controller\AbstractActionController{
         $this->em = $em;
     }
 
+   
+
     public function deleteAction(){
         $entity = $this->params('entity');
         $entity = str_replace("_","\\",$entity);
@@ -34,8 +36,16 @@ class IndexController extends \Zend\Mvc\Controller\AbstractActionController{
             $this->em->remove($obj);
             $this->em->flush();
         }
+
+        if($this->getRequest()->getMethod() == \Zend\Http\Request::METHOD_DELETE){
+            // die(json_encode(['ok' => true]));
+            return new \Zend\View\Model\JsonModel(['success' => true]);
+        }
         
-        return $this->redirect()->toUrl($_SERVER['HTTP_REFERER']);
+        if(isset($_SERVER['HTTP_REFERER']))
+            return $this->redirect()->toUrl($_SERVER['HTTP_REFERER']);
+        else
+            return $this->redirect()->toUrl("/");
     }
 
     public function updateAction(){

@@ -1,66 +1,99 @@
 <p></p>
 <hr>
-<div class="box box-success filter-box">
-	<div class="box-header with-border bg-gray">
-		<div class="box-title text-muted" data-toggle="collapse" data-target="#filterForm">
-		    <a href="javascript:void(0)" class="btn btn-default btn-flat">
-				<i class="fa fa-lg fa-fw fa-bars"></i> Filtracja
-		    </a>
-		</div>
-		<div class="box-tools pull-right" style="max-width: 50%;width: 30%;float: right;top:10px;position: static">
-			<div class="input-group" >
-				<input type="text" name="table_search" ng-model="query.search" class="form-control pull-right" placeholder="<?= $table->getSearchLabel(); ?>">
-
-				<div class="input-group-btn">
-					<button type="submit" class="btn btn-default btn-flat"><i class="fa fa-search"></i></button>
+<div class="filter-box ">
+	<div class="">
+		<div class="row">
+			
+			<div class="col-lg-8 col-lg-push-4 col-md-7 col-md-push-5">
+				<div class="input-group" >
+					<div class="input-group-btn">
+				    	<div class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				      		Szukaj
+						</div>
+				    	<!-- <ul class="dropdown-menu">
+				    		<? foreach($table->searchColumns as $s):?>
+				    		<li><a href="javascript:void(0)"><?= $s->label;?></a></li>
+							<? endforeach;?>
+						</ul> -->
+					</div>
+					<input type="text" name="table_search" ng-model="query.search" class="form-control pull-right" placeholder="<?= $table->getSearchLabel(); ?>">
+					<div class="input-group-btn">
+						<button type="submit" class="btn btn-default btn-flat"><i class="fa fa-search"></i></button>
+					</div>
 				</div>
+				<p></p>
 			</div>
+			<? if($table->hasFilterForm()) :?>
+			<div class="col-lg-4 col-lg-pull-8 col-md-5 col-md-pull-7 text-muted" >
+			    <!-- <div class="btn-group"> -->
+				    <a href="javascript:void(0)" class="btn btn-info btn-flat btn-sm btn-labeled " data-toggle="collapse" data-target="#filterForm">
+				    	<span class="btn-label"><i class="fa fa-lg fa-fw fa-bars"></i></span>
+						 Filtracja
+				    </a>
+				    <div class="btn btn-flat btn-danger btn-labeled btn-sm " ng-click="setInitialState()">
+						<span class="btn-label"><i class="fa fa-times"></i></span>
+						Wyczyść filtry
+					</div>
+					<p></p>
+			    <!-- </div> -->
+			</div>
+			<? endif;?>
+			
+		</div>
 	</div>
-</div>
-<div class="box-body no-padding collapse bg-gray" id="filterForm" style="border-radius: 0">
-	<div style="padding:15px 10px;">
-<?= $table->hasFilterForm() ?  $this->myForm()->nosubmit()->vertical($table->getFilterForm()->prepare(),(int)$table->getFilterForm()->getOption('columns')) : null; ?>
+
+
+	<div class="no-padding collapse" id="filterForm" style="border-radius: 0">
+		<div style="padding:15px 10px;">
+		<?= $table->hasFilterForm() ?  $this->myForm()->nosubmit()->vertical($table->getFilterForm()->prepare(),(int)$table->getFilterForm()->getOption('columns')) : null; ?>
+		</div>
 	</div>
-</div>
-<div class="box-footer never-hide bg-gray" style="">            
-	<!-- <div class="btn btn-flat btn-danger btn-labeled btn-sm" ng-class="{disabled: !hasFilter()}" ng-click="ClearFilter()">
-	<span class="btn-label"><i class="fa fa-times"></i></span>
-	Wyczyść filtry
+	
+	<div class="" style="border-top:1px solid #ddd; padding-top:8px" ng-init='filterMap = <?= (json_encode($table->getFilterMap()));?>'>            
+		<!-- <div class="btn btn-flat btn-danger btn-labeled btn-sm" ng-class="{disabled: !hasFilter()}" ng-click="ClearFilter()">
+		<span class="btn-label"><i class="fa fa-times"></i></span>
+		Wyczyść filtry
+		</div> -->
+	<!-- <div class="btn btn-flat btn-default btn-labeled btn-sm" ng-click="setInitialState()">
+	<span class="btn-label"><i class="fa fa-history"></i></span>
+	Ustawienia Domyślne
 	</div> -->
-<!-- <div class="btn btn-flat btn-default btn-labeled btn-sm" ng-click="setInitialState()">
-<span class="btn-label"><i class="fa fa-history"></i></span>
-Ustawienia Domyślne
-</div> -->
-<span class="label" ng-repeat="label in query.filter">
-	<!-- <pre>{{label|json}}</pre> -->
+	<!-- <pre>{{query.filter | queryfilter}}</pre> -->
+	<span class="label label-info" ng-repeat="(key,filterOption) in query.filter | queryfilter" style="margin-right: 5px;    font-size: 0.9em;">
+		
+		<span ng-if="filterMap[key][filterOption]">{{filterMap[key][filterOption][0]}}</span>
+		<span ng-if="!filterMap[key][filterOption]">{{filterMap[key][0]}}</span>
 
-</span>
+		:
+
+		<span ng-if="filterMap[key][1] == '__value__'">{{filterOption}}</span>
+		<span ng-if="filterMap[key][1] != '__value__'">
+			<span ng-if="filterMap[key][filterOption]">{{filterMap[key][filterOption][1]}}</span>
+			<span ng-if="!filterMap[key][filterOption]">{{filterMap[key][1]}}</span>
+			
+		</span>
+		<a ng-click="clearFilter(key)"><i class="fa fa-fw fa-times"></i></a>
+	</span>
 
 
-<div class="btn btn-flat btn-danger btn-labeled btn-sm pull-right" ng-click="setInitialState()">
-	<span class="btn-label"><i class="fa fa-times"></i></span>
-	Wyczyść filtry
-</div>
 
 
-<div class="alert alert-info" role="alert" ng-if="totalUnfilter > 0">
-	Znaleziono 
-	<strong>{{total}}</strong>
-	<ng-pluralize count="total" offset=2
-              when="{'0': 'elementów',
-              		 'one': 'element',
-                     'few': 'elementy',
-                     'many': 'elementów',                     
-                     'other': 'elementów'}">
-	</ng-pluralize>
-	spełniających podane kryteria z
-	<strong>{{totalUnfilter}} </strong>
-	znajdujących się w bazie
-</div>
-<!-- <span class='label label-info label-btn-align'>
-&nbsp;Znaleziono elementów: <strong>{{total}}</strong> z <strong>{{totalUnfilter}}</strong>
-</span> -->
-</div>
+
+		<!-- <div class="alert alert-info" role="alert" ng-if="totalUnfilter > 0">
+			Znaleziono 
+			<strong>{{total}}</strong>
+			<ng-pluralize count="total" offset=2
+		              when="{'0': 'elementów',
+		              		 'one': 'element',
+		                     'few': 'elementy',
+		                     'many': 'elementów',                     
+		                     'other': 'elementów'}">
+			</ng-pluralize>
+			spełniających podane kryteria z
+			<strong>{{totalUnfilter}} </strong>
+			znajdujących się w bazie
+		</div> -->
+	</div>
 </div>
 
 <p></p>
@@ -80,6 +113,11 @@ Ustawienia Domyślne
     padding: 5px 15px;
     /*margin: 10px 0;*/
     margin:0;
+}
+@media only screen and (max-width: 800px){
+	#no-more-tables tfoot tr {
+	    display: none;
+	}
 }
 
 </style>

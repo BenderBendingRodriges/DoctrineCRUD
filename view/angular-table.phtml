@@ -5,7 +5,9 @@
 
 
 
-<div class="box box-success" >
+
+
+<div class="box box-success" dt-wrapper ng-init="init('<?= $table->getQuerySuffix();?>')">
 <div class="box-header with-border">
     <div class="row">
         <div class="col-md-6">
@@ -19,7 +21,7 @@
         <? endif; ?>
         </div>
     </div>
-
+    <? if($table->hasFilterForm() || $table->hasSearch())echo  $this->partial('partial/filter'); ?>
 
 </div>
 
@@ -32,6 +34,7 @@
         <p>trwa ładowanie</p>
     </div>
 </div>
+
 <table class='table table-striped table-hover table-bordered'  >
     <thead>
         <tr>
@@ -50,8 +53,11 @@
             <p>- brak wyników -</p>
             </td>
         </tr>
-        <tr ng-repeat="(key,item) in items" dt-repeat>
-            <td>{{(key*1+(query.page-1)*query.itemCount+1)|number}}</td>
+        <tr ng-repeat="(key,item) in items" dt-repeat ng-class="item.row_class">
+            <!-- <td class="hidden-mobile">{{(key*1+(query.page-1)*query.itemCount+1)|number}}</td> -->
+            <td class="hidden-mobile">
+                <span class="badge">{{(key*1+(query.page-1)*query.itemCount+1)|number}}</span>
+            </td>
             <? foreach($table->getColumns() as $column): ?>
             <?= $this->BodyColumn()->angular($column); ?>
             <? endforeach; ?>
@@ -85,15 +91,15 @@
             znajdujących się w bazie
         </span>
     <ul class="pagination pagination-sm no-margin pull-right">
-        <li><a href="#" ng-click="paginator.first()"><i class="fa fa-angle-double-left"></i></a></li>
-        <li><a href="#" ng-click="paginator.prev()"><i class="fa fa-angle-left"></i></a></li>
+        <li><a href="javascript:void(0)" ng-click="paginator.first()"><i class="fa fa-angle-double-left"></i></a></li>
+        <li><a href="javascript:void(0)" ng-click="paginator.prev()"><i class="fa fa-angle-left"></i></a></li>
         <li ng-if="paginator.hasMoreBefore()"><a>...</a></li>
 
-        <li ng-repeat="p in paginator.range()" ng-class='{active: p == query.page}'><a href="#" ng-click="paginator.setPage(p)">{{p}}</a></li>
+        <li ng-repeat="p in paginator.range()" ng-class='{active: p == query.page}'><a href="javascript:void(0)" ng-click="paginator.setPage(p)">{{p}}</a></li>
 
         <li ng-if="paginator.hasMoreAfter()"><a>...</a></li>
-        <li><a href="#" ng-click="paginator.next()"><i class="fa fa-angle-right"></i></a></li>
-        <li><a href="#" ng-click="paginator.last()"><i class="fa fa-angle-double-right"></i></a></li>
+        <li><a href="javascript:void(0)" ng-click="paginator.next()"><i class="fa fa-angle-right"></i></a></li>
+        <li><a href="javascript:void(0)" ng-click="paginator.last()"><i class="fa fa-angle-double-right"></i></a></li>
     </ul>
       <?//= $this->paginationControl($table->getPaginator(),'Sliding','partial/table_paginator'); ?>
 </div>
@@ -108,6 +114,25 @@
       radioClass: 'iradio_square-blue',
       increaseArea: '20%' // optional
     });
+
+    $('body').on('click','.confirm',function(e){
+        e.preventDefault();
+        var self = $(this);
+        $('#modal-delete').modal('show');
+        var url = $(this).attr('href');
+        $('#modal-delete').find('.btn-danger').on('click',function(){
+            $(this).unbind('click');
+            $.ajax({
+                type : 'DELETE',
+                url : url,
+                datatype : 'json',
+                complete : function(response){
+                    $('#modal-delete').modal('hide');
+                    self.parentsUntil('tr').parent().remove();
+                }
+            })
+        });
+    })
   });   
 <? $this->inlineScript()->captureEnd();?>
 </script>
@@ -176,3 +201,32 @@ td > div{
     display: block;
 }
 </style>
+
+
+<div class="modal modal-danger fade" id="modal-delete" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">Ostrzerzenie przed usunięciem!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Czy na pewno chcsesz usunąć element?</p>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button> -->
+        <button type="button" class="btn btn-flat btn-danger btn-labeled">
+            <span class="btn-label"><i class="fa fa-trash fa-lg fa-fw"></i></span>
+            Tak usuń
+        </button>
+        <button type="button" class="btn btn-flat btn-default btn-labeled"  data-dismiss="modal">
+            <span class="btn-label"><i class="fa fa-times fa-lg fa-fw"></i></span>
+            Anuluj
+        </button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>

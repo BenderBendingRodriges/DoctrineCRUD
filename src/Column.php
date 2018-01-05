@@ -10,6 +10,7 @@ class Column {
     private $search = false;
     private $sort = true;
     private $partial = false;
+    private $fullpartial = false;
     private $dateFormat = 'Y-m-d';
     private $function;
     private $null;
@@ -21,6 +22,7 @@ class Column {
     private $price = null;
     private $thumb = null;
     private $helper = null;
+    private $implode = null;
     
     
     public function getCallable(){
@@ -30,14 +32,20 @@ class Column {
 
     public function addSelect(&$select){
         
-        if(!$this->partial){
+        if($this->partial){
+            list($entity,$prop) = explode(".",$this->field);
+            $this->table->partials[$entity] = array_merge(isset($this->table->partials[$entity]) ? $this->table->partials[$entity] : array(),array($prop));
+            
+        }
+        // elseif($this->fullpartial){
+        //     list($entity,$prop) = explode(".",$this->field);
+        //     $this->table->partials[$entity] = array_merge(isset($this->table->partials[$entity]) ? $this->table->partials[$entity] : array(),array($prop));
+        // }
+
+        else{
             list($field,$alias) = $this->getField();
             $select[$alias] = $field . ' as ' . $alias;
-        }else{
-            list($entity,$prop) = explode(".",$this->field);
-//            die('partial '.$entity.'.{'.$prop.'}');
-//            $select['partial '.$entity] = 'partial '.$entity.'.{'.$prop.'}';
-            $this->table->partials[$entity] = array_merge(isset($this->table->partials[$entity]) ? $this->table->partials[$entity] : array(),array($prop));
+            
         }
     }
 
@@ -124,6 +132,10 @@ class Column {
         if(isset($this->affix)){
             $value = $value. $this->affix;
         }
+         if(@$this->implode){
+            $value = implode(",",array_filter($value));
+        }
+        
         if($this->url){
             $value =  sprintf('<a href="%s">%s</a>',$this->getUrl($item),$value);
         }

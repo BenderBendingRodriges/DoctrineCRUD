@@ -11,10 +11,16 @@ class AngularDoctrineCRUD extends DoctrineCRUD{
     protected $filterForm;
     protected $cookieKey;
     protected $initalState;
+    protected $filterMap = [];
+
+    protected $querySuffix = null;
+    public function getQuerySuffix(){ return $this->querySuffix ? '?query_suffix=' . $this->querySuffix : '';}
+    public function setQuerySuffix($value){ return $this->querySuffix = $value;}
 
     public function getInitalState(){return $this->initalState;}
     public function hasInitalState(){return $this->initalState != null;}
     public function setInitalState($val){return $this->initalState = $val;}
+
 
     public function getCookieKey(){return $this->cookieKey;}
     public function hasCookieKey(){return $this->cookieKey != null;}
@@ -27,7 +33,33 @@ class AngularDoctrineCRUD extends DoctrineCRUD{
     public function hasFilterForm(){
         return $this->filterForm != null;
     }
+    public function getFilterMap(){
+        if(!$this->filterForm)
+            return null;
+        foreach($this->filterForm->getElements() as $k => $element){
+            if(method_exists($element, 'getValueOptions')){
+                foreach($element->getValueOptions() as $valueOption){
+                    $key = str_replace('query.filter.','',$valueOption["attributes"]['data-ng-model']);
+                    $key = str_replace(['[',']'],['.',''],$key);
 
+                    if(count(explode('.',$key )) == 3){
+                        // var_dump($valueOption);
+                        // foreach()
+                        $this->filterMap[$key][$valueOption['value']] = array($element->getLabel(),$valueOption['label']);
+                    }
+                    else
+                        $this->filterMap[$key] = array($element->getLabel(),$valueOption['label']);
+                }
+            }else{
+
+                $key = str_replace('query.filter.','',$element->getAttribute("data-ng-model"));
+                $this->filterMap[$key] = array($element->getLabel(),'__value__');
+            }
+        }
+        // var_dump($this->filterMap);
+        // die();
+        return $this->filterMap;
+    }
     public function addFilter($property,$label,$type,$expr,$attr = array(),$options= array()){
         // 'category', 'Kategoria','\Stmx\Form\Element\TreeSelect',array(),array(
         if(!$this->filterForm){
@@ -41,9 +73,16 @@ class AngularDoctrineCRUD extends DoctrineCRUD{
             'data-ng-change' => "doFilter()",
             'data-ng-model' => 'query.filter.'.$property.'.'.$expr
         ),$attr);
+
+
+        // $this->filterMap[]
         $element->setAttributes($attr);
         $element->setOptions($options);
         $this->filterForm->add($element);
+
+
+        
+        
         $this->filterForm->setOption('columns',max($this->filterForm->getOption('columns'),$element->getOption('col')));
     }
     
@@ -58,6 +97,9 @@ class AngularDoctrineCRUD extends DoctrineCRUD{
         if($request->isXmlHttpRequest() && $request->isPost()){            
             $data = json_decode(file_get_contents("php://input"));
             $this->prepare((array)$data);
+
+            // die(var_dump(get_class_methods($this->paginator)));
+            // $table->paginator->getQb()->orWhere('d.id = p.id');
             $items = array();
             foreach($this->paginator->getCurrentItems() as $item){
                 $row = $item;

@@ -64,7 +64,7 @@ class BodyColumn extends AbstractHelper{
 
 
         if($column->ng) return '<td  data-title="'.$column->label.'">' . $column->ng . '</td>';
-        return '<td  data-title="'.$column->label.'"><div ng-bind-html="item.' . $column->getAlias(true) . ' | unsafe"></div></td>';
+        return '<td  data-title="'.$column->label.'"><div ng-bind-html="item.' . $column->getAlias(true) . ' | unsafe"></div>&nbsp;</td>';
     }
 }
 
