@@ -100,27 +100,33 @@ class DoctrineCRUD {
         $req->setRequestUri($url);
         $req->setUri($url);
         
-        $page = self::findActivePage($nav,$rm->match($req));    
+        $page = self::findActivePage($nav,$rm->match($req));   
+        // var_dump([$url,!$page]);
         if(!$page)return false;
 
         $acl = $this->sm->get('ViewManager')->getViewModel()->getVariable('acl');
+
+
 
         return $acl->isAllowed(null,$page->getResource(),$page->getPrivilege());
     }
     public function addButton($button){
         
-
+        
         
         
         if($this->checkIsAllowedFromUrl($button['url']))
             $this->buttons[] = new Button($button,$this);
     }
     public function addDelButton($entity = null,$identity = null){
-        $user = $this->sm->get('Zend\Authentication\AuthenticationService')->getIdentity();
-        if($user->role != 'admin')return;
-        // var_dump(get_class($user));
+        $nav = $this->sm->get('Zend\Navigation\Navigation');
+        $activeElement = $nav->findOneBy('active', 1);       
+        $resource =  $activeElement ? $activeElement->getResource() : null;
+        $acl = $this->sm->get('ViewManager')->getViewModel()->getVariable('acl');
 
-        // die();
+        if(!$acl->isAllowed(null,$resource,'delete'))return;
+        // if(return $acl->isAllowed(null,$page->getResource(),$page->getPrivilege());)
+        
         if(!$entity || !$identity){
             $from = $this->qb->getDQLPart('from');   
             $from = $from[0];         
@@ -144,6 +150,7 @@ class DoctrineCRUD {
         {
             foreach($button['dropdown'] as $key => $dropbtn){
                 if(!$this->checkIsAllowedFromUrl($dropbtn['url'])){
+
                     unset($button['dropdown'][$key]);
                 }
             }
@@ -151,6 +158,7 @@ class DoctrineCRUD {
             $this->footButtons[] = new FootButton($button,$this);
         }
         else if($this->checkIsAllowedFromUrl($button['url'])){
+
             $this->footButtons[] = new FootButton($button,$this);
         }
     }

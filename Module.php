@@ -23,13 +23,13 @@ class Module
                     'table_delete' => [
                         'label' => 'Delete',
                         'route' => 'table_delete',
-                        'resource' => 'loged',
+                        'resource' => 'logged',
                         'visible' => false,
                     ],
                     'table_update' => [
                         'label' => 'Delete',
                         'route' => 'table_update',
-                        'resource' => 'loged',
+                        'resource' => 'logged',
                         'visible' => false,
                     ]
                 ]

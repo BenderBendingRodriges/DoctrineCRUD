@@ -94,7 +94,7 @@ class AngularDoctrineCRUD extends DoctrineCRUD{
         
         $this->sm = $sm;
         $request = $sm->get('request');
-        if($request->isXmlHttpRequest() && $request->isPost()){            
+        if($request->isXmlHttpRequest() && $request->isPost() || $_GET['debug']){            
             $data = json_decode(file_get_contents("php://input"));
             $this->prepare((array)$data);
 

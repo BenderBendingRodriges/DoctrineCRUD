@@ -4,7 +4,7 @@ namespace DoctrineCRUD;
 class Button {
     /** @var \Table\Table   */
     private $table;
-    private $url;
+    protected $url;
     private $urlReplace;
     private $title;
     private $if;

@@ -44,7 +44,7 @@
             foreach($table->getColumns() as $column)$columns .= $this->HeaderColumn()->angular($column); 
             echo $columns;
             ?>
-            <th colspan="<?= count($table->getButtons()) ?>" class='text-right'>Opcje</th>
+            <th colspan="<?//= count($table->getAclButtons()) ?>" class='text-right'>Opcje</th>
         </tr>
     </thead>
     <tbody>
@@ -61,8 +61,21 @@
             <? foreach($table->getColumns() as $column): ?>
             <?= $this->BodyColumn()->angular($column); ?>
             <? endforeach; ?>
-            <td class="buttons text-right">
-            <? if($table->getButtons())foreach($table->getButtons() as $btn)echo $this->BodyButton()->angular($btn); ?>
+            <td class="buttons text-right" >
+                <span ng-repeat="btn in item.buttons">
+                <a href="{{btn.url}}" class="{{btn.class}}" ng-if="btn.allowed" uib-tooltip="{{btn.title}}" tooltip-append-to-body="true" tooltip-placement="left">
+                    <i class="{{btn.icon}}"></i>
+                </a>
+
+                <a href="{{btn.url}}" class="btn disabled btn-default btn-circle" ng-if="!btn.allowed" 
+                    uib-tooltip="{{'Nie masz uprawnien do : ' + btn.title}}" tooltip-append-to-body="true" tooltip-placement="left"
+                >
+                    <i class="fa fa-times"></i>
+                </a>
+                </span>
+            <? 
+                // if($table->getButtons())foreach($table->getButtons() as $btn)echo $this->BodyButton()->angular($btn);
+            ?>
             </td>
         </tr>
     </tbody>
