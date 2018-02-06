@@ -17,12 +17,14 @@ class AngularACLDoctrineCRUD  extends AngularDoctrineCRUD{
         $url = $button['url'];
 
         $nav = clone $this->sm->get('Zend\Navigation\Navigation');
+        $nav2 = clone $this->sm->get('custom');
         $rm = $this->sm->get('Router');
         $req = new \Zend\Http\PhpEnvironment\Request();
         $req->setRequestUri($url);
         $req->setUri($url);
         
         $page = self::findActivePage($nav,$rm->match($req));  
+        $page = $page ? $page : self::findActivePage($nav2,$rm->match($req));  
         $acl = $this->sm->get('ViewManager')->getViewModel()->getVariable('acl'); 
 
         $this->aclButtons[] = new AclButton($button,$this,$acl,$acl->getResource($page->getResource()),$page->getPrivilege());

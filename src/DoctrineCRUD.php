@@ -464,8 +464,13 @@ class DoctrineCRUD {
         $label = null;
         if($this->label){
             $label = $this->label;
-        }elseif($active = $this->sm->get('navigation')->findOneByActive(true)){
+        }
+        elseif($active = $this->sm->get('navigation')->findOneByActive(true)){
 
+
+            $label = $active->getLabel();
+        }
+        elseif($active = $this->sm->get('custom')->findOneByActive(true)){
 
             $label = $active->getLabel();
         }
