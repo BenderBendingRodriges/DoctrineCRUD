@@ -56,7 +56,7 @@ class BodyColumn extends AbstractHelper{
         return '<td>' . $value . '</td>';
     }
     public function angular($column){
-        if($column instanceof \Table\ColumnInput){
+        if($column instanceof \DoctrineCRUD\ColumnInput){
             return $column->render();
             
         }

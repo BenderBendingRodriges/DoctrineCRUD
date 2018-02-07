@@ -63,12 +63,12 @@ class IndexController extends \Zend\Mvc\Controller\AbstractRestfulController{
         foreach($data as $param => $val){
             if(isset($meta->associationMappings[$param])){
                 // var_Dump($meta->associationMappings[$param]);die();
-                $val = $em->find($meta->associationMappings[$param]['targetEntity'],$val);
+                $val = $this->em->find($meta->associationMappings[$param]['targetEntity'],$val);
             }
         	$entity->{$param} = $val;
         }
-        $em->persist($entity);
-        $em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
         die(var_dump($entity->{$param}));
         // $this->redirect()->toUrl($_SERVER['HTTP_REFERER']);
         // 

@@ -30,7 +30,7 @@ class ColumnInput extends Column{
 	}
 
 	public static function create($type,$options,$selectOptions,$table){
-		$class_name = "\Table\Column".ucfirst($type);
+		$class_name = "\DoctrineCRUD\Column".ucfirst($type);
 		if(class_exists($class_name))
 			return new $class_name($options,$selectOptions,$table);
 	}

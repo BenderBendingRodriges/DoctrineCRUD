@@ -55,6 +55,7 @@ class DoctrineCRUD {
             
     }
     public function addColumnInput($type,$column,$options){  
+        // die(var_dump(ColumnInput::create($type,$column,$options,$this)));
         if($col = ColumnInput::create($type,$column,$options,$this)){
             $this->columns[] = $col;
             if($col->search)$this->searchColumns[] = $col;
